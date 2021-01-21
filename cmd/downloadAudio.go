@@ -16,18 +16,27 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )
 
 // downloadAudioCmd represents the downloadAudio command
 var downloadAudioCmd = &cobra.Command{
-	Use:   "downloadAudio",
+	Use:   "downloadAudio <youtube url> <fileName>",
 	Short: "Download Youtube video as a podcast",
 	Long:  `It downloads only the audio of a youtube video`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("downloadAudio called")
+		downloadAudio(args)
 	},
 }
 
@@ -43,4 +52,85 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// downloadAudioCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func downloadAudio(args []string) error {
+	match, _ := regexp.Match(`^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$`, []byte(args[0]))
+
+	if !match {
+		fmt.Println("Pls enter a valid url")
+		return nil
+	}
+	u, err := url.Parse(args[0])
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	par, _ := url.ParseQuery(u.RawQuery)
+
+	id := par["v"][0]
+	queryStr := "https://www.youtube.com/get_video_info?video_id=" + id + "&el=embedded&eurl=https://youtube.googleapis.com/v/" + id + "&sts=18333"
+
+	resp, _ := http.Get(queryStr)
+	rb, _ := ioutil.ReadAll(resp.Body)
+	data := string(rb)
+
+	params, err := url.ParseQuery(data)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	var result map[string]interface{}
+	json.Unmarshal([]byte(params["player_response"][0]), &result)
+	q := result["streamingData"].(map[string]interface{})
+	h := q["adaptiveFormats"].([]interface{})
+
+	check := h[len(h)-1].(map[string]interface{})
+
+	if _, ok := check["url"]; !ok {
+		fmt.Println("This audio cant be downloaded as it requires YouTube Premium")
+		return nil
+	}
+
+	s := h[len(h)-1].(map[string]interface{})
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	home += "/Downloads/"
+
+	out, err := os.Create(filepath.Join(home, filepath.Base(args[1])))
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	defer out.Close()
+
+	// Get the data
+	res, _ := http.Get(s["url"].(string))
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	defer res.Body.Close()
+
+	fmt.Println("Downloading the audio in ~/Downloads")
+
+	//Check server response
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	//Writer the body to file
+	io.Copy(out, res.Body)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
