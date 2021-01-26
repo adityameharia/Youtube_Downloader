@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+Package cmd Copyright © 2021 NAME HERE <EMAIL ADDRESS>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,9 +24,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -56,6 +58,36 @@ type writeCounter struct {
 	Total      uint64
 }
 
+func (wc *writeCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.downloaded += uint64(n)
+	wc.printProgress()
+	return n, nil
+}
+
+func (wc writeCounter) printProgress() {
+	// Clear the line by using a character return to go back to the start and remove
+	// the remaining characters by filling it with spaces
+	fmt.Printf("\r%s", strings.Repeat(" ", 36))
+
+	progress := (wc.downloaded * 100) / wc.Total
+
+	fmt.Print("\rDownloading... " + fmt.Sprint(progress) + "% complete")
+}
+
+func onSigInt(path string) {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		err := os.Remove(path)
+		if err != nil {
+			fmt.Println("Unable to delete the file created")
+		}
+		os.Exit(1)
+	}()
+}
+
 func downloadVideo(args []string, high bool, audio bool) error {
 
 	match, _ := regexp.Match(`^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$`, []byte(args[0]))
@@ -81,8 +113,22 @@ func downloadVideo(args []string, high bool, audio bool) error {
 
 		id = par["v"][0]
 	}
+
 	queryStr := "https://www.youtube.com/get_video_info?video_id=" + id + "&el=embedded&eurl=https://youtube.googleapis.com/v/" + id + "&sts=18333"
 
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	home += "/Downloads/"
+	onSigInt(home + args[1])
+	if _, err := os.Stat(home + args[1]); err == nil {
+
+		fmt.Println("The given filename already exists")
+		return nil
+	}
 	resp, _ := http.Get(queryStr)
 	rb, _ := ioutil.ReadAll(resp.Body)
 	data := string(rb)
@@ -134,13 +180,6 @@ func downloadVideo(args []string, high bool, audio bool) error {
 		s = h[len(h)-1].(map[string]interface{})
 
 	}
-	home, err := os.UserHomeDir()
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	home += "/Downloads/"
 
 	out, err := os.Create(filepath.Join(home, filepath.Base(args[1])))
 	if err != nil {
@@ -156,20 +195,21 @@ func downloadVideo(args []string, high bool, audio bool) error {
 	// Get the data
 
 	counter := &writeCounter{}
+	var mu sync.Mutex
 	res, err := http.Get(s["url"].(string))
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 	defer res.Body.Close()
-
-	counter.Total = uint64(res.ContentLength)
-
 	//Check server response
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("bad status: %s", resp.Status)
 	}
+	counter.Total = uint64(res.ContentLength)
 
+	mu.Lock()
+	defer mu.Unlock()
 	//Writer the body to file
 	io.Copy(out, io.TeeReader(res.Body, counter))
 	if err != nil {
@@ -180,23 +220,4 @@ func downloadVideo(args []string, high bool, audio bool) error {
 	fmt.Printf("\rDownload Completed...U can view the file at %v%v\n", home, args[1])
 	return nil
 
-}
-
-func (wc *writeCounter) Write(p []byte) (int, error) {
-	n := len(p)
-	wc.downloaded += uint64(n)
-	wc.printProgress()
-	return n, nil
-}
-
-func (wc writeCounter) printProgress() {
-	// Clear the line by using a character return to go back to the start and remove
-	// the remaining characters by filling it with spaces
-	fmt.Printf("\r%s", strings.Repeat(" ", 36))
-
-	progress := (wc.downloaded * 100) / wc.Total
-	//str := fmt.Sprintf("%f", progress)
-	// Return again and print current status of download
-	// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
-	fmt.Print("\rDownloading... " + fmt.Sprint(progress) + "% complete")
 }
