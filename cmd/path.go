@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+Package cmd Copyright © 2021 NAME HERE <EMAIL ADDRESS>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ So we had to limit the number of request we are sending per sec and hence
 having a path greater than 3-4 jumps might take more than 10mins`,
 	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		GetPath(args)
+		getPath(args)
 	},
 }
 
@@ -54,7 +54,7 @@ func init() {
 	// pathCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func GetPath(args []string) error {
+func getPath(args []string) error {
 	start := args[0]
 	end := args[1]
 	limit := make(chan int, 250)
