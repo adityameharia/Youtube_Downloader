@@ -26,6 +26,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -38,17 +39,24 @@ var downloadCmd = &cobra.Command{
 	Long:  `Download Youtube videos to your ~/Downloads directory with the given file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		high, _ := cmd.Flags().GetBool("high")
+		audio, _ := cmd.Flags().GetBool("audio")
 		//fmt.Println("download called")
-		downloadVideo(args, high)
+		downloadVideo(args, high, audio)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(downloadCmd)
 	downloadCmd.Flags().Bool("high", false, "Downloads video in 720p if available")
+	downloadCmd.Flags().BoolP("audio", "a", false, "Downloads only audio")
 }
 
-func downloadVideo(args []string, high bool) error {
+type writeCounter struct {
+	downloaded uint64
+	Total      uint64
+}
+
+func downloadVideo(args []string, high bool, audio bool) error {
 
 	match, _ := regexp.Match(`^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$`, []byte(args[0]))
 
@@ -63,9 +71,16 @@ func downloadVideo(args []string, high bool) error {
 		return nil
 	}
 
-	par, _ := url.ParseQuery(u.RawQuery)
+	var id string
+	if u.Host == "youtu.be" {
+		num := strings.LastIndex(args[0], "/")
+		id = args[0][num+1:]
+	} else {
 
-	id := par["v"][0]
+		par, _ := url.ParseQuery(u.RawQuery)
+
+		id = par["v"][0]
+	}
 	queryStr := "https://www.youtube.com/get_video_info?video_id=" + id + "&el=embedded&eurl=https://youtube.googleapis.com/v/" + id + "&sts=18333"
 
 	resp, _ := http.Get(queryStr)
@@ -81,27 +96,44 @@ func downloadVideo(args []string, high bool) error {
 	var result map[string]interface{}
 	json.Unmarshal([]byte(params["player_response"][0]), &result)
 	q := result["streamingData"].(map[string]interface{})
-	h := q["formats"].([]interface{})
-	var index int
 
-	check := h[0].(map[string]interface{})
+	var s map[string]interface{}
 
-	if _, ok := check["url"]; !ok {
-		fmt.Println("This video cant be downloaded as it requires YouTube Premium")
-		return nil
-	}
+	if audio == false {
+		h := q["formats"].([]interface{})
+		var index int
 
-	if high == true && len(h) >= 2 {
-		index = 1
-	} else {
-		if high == true {
-			fmt.Println("Unfortunately 720p quality wasnt available")
+		check := h[0].(map[string]interface{})
+
+		if _, ok := check["url"]; !ok {
+			fmt.Println("This video cant be downloaded as it requires YouTube Premium")
+			return nil
 		}
-		index = 0
+
+		if high == true && len(h) >= 2 {
+			index = 1
+		} else {
+			if high == true {
+				fmt.Println("Unfortunately 720p quality wasnt available")
+			}
+			index = 0
+		}
+
+		s = h[index].(map[string]interface{})
+
+	} else {
+		h := q["adaptiveFormats"].([]interface{})
+
+		check := h[len(h)-1].(map[string]interface{})
+
+		if _, ok := check["url"]; !ok {
+			fmt.Println("This audio cant be downloaded as it requires YouTube Premium")
+			return nil
+		}
+
+		s = h[len(h)-1].(map[string]interface{})
+
 	}
-
-	s := h[index].(map[string]interface{})
-
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println(err)
@@ -117,15 +149,21 @@ func downloadVideo(args []string, high bool) error {
 	}
 	defer out.Close()
 
+	// y := spinner.New(spinner.CharSets[0], 100*time.Millisecond)
+	// y.Prefix = "Downloading the video in ~/Downloads: "
+	// y.Start()
+	// defer y.Stop()
 	// Get the data
-	res, _ := http.Get(s["url"].(string))
+
+	counter := &writeCounter{}
+	res, err := http.Get(s["url"].(string))
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 	defer res.Body.Close()
 
-	fmt.Println("Downloading the video in ~/Downloads")
+	counter.Total = uint64(res.ContentLength)
 
 	//Check server response
 	if resp.StatusCode != http.StatusOK {
@@ -133,10 +171,32 @@ func downloadVideo(args []string, high bool) error {
 	}
 
 	//Writer the body to file
-	io.Copy(out, res.Body)
+	io.Copy(out, io.TeeReader(res.Body, counter))
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
+	fmt.Printf("\r%s", strings.Repeat(" ", 36))
+	fmt.Printf("\rDownload Completed...U can view the file at %v%v\n", home, args[1])
 	return nil
+
+}
+
+func (wc *writeCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.downloaded += uint64(n)
+	wc.printProgress()
+	return n, nil
+}
+
+func (wc writeCounter) printProgress() {
+	// Clear the line by using a character return to go back to the start and remove
+	// the remaining characters by filling it with spaces
+	fmt.Printf("\r%s", strings.Repeat(" ", 36))
+
+	progress := (wc.downloaded * 100) / wc.Total
+	//str := fmt.Sprintf("%f", progress)
+	// Return again and print current status of download
+	// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
+	fmt.Print("\rDownloading... " + fmt.Sprint(progress) + "% complete")
 }
