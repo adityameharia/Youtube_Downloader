@@ -30,10 +30,8 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "yt-downloader",
-	Short: "A cli used to download youtube videos and other fun stuff",
-	Long: `A cli which can download YouTube videos for you.
-	Finds a random path between two wikipedia pages
-	Get all the links on a HTML page`,
+	Short: "A cli used to download youtube videos",
+	Long:  `A cli which can download YouTube videos for you.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
