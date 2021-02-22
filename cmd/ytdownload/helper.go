@@ -48,7 +48,7 @@ func CreateFile(filename string) (*os.File, error) {
 		return nil, err
 	}
 	dir := strings.Split(home, "/")
-	home += dir[1] + dir[2] + "/Downloads/"
+	home = "/" + dir[1] + "/" + dir[2] + "/Downloads/"
 
 	//to delete partially written files on ^C
 	onSigInt(home + filename)
