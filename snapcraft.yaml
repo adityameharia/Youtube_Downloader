@@ -22,5 +22,5 @@ plugs:
   yt-downloader-personal-files:
     interface: personal-files
     write:
-    - $HOME/Downloads
+    - /home
   
