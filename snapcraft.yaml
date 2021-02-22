@@ -5,6 +5,7 @@ description: |
   A cli written in golang to download youtube videos
   Cant download copyrighted content
 confinement: devmode
+base: core20
 parts:
   yt-downloader:
     plugin: go
