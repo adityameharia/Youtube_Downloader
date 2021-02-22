@@ -17,6 +17,7 @@ type writeCounter struct {
 	Total      uint64
 }
 
+//GetDownloadData gets the json resp
 func GetDownloadData(queryStr string) (map[string]interface{}, error) {
 	resp, _ := http.Get(queryStr)
 	rb, _ := ioutil.ReadAll(resp.Body)
@@ -37,7 +38,8 @@ func GetDownloadData(queryStr string) (map[string]interface{}, error) {
 	return q, nil
 }
 
-func GetDownloadAudioUrl(q map[string]interface{}, high bool, audio bool) (string, error) {
+//GetDownloadAudioURL get the url for downloading only audio
+func GetDownloadAudioURL(q map[string]interface{}, high bool, audio bool) (string, error) {
 	h := q["adaptiveFormats"].([]interface{})
 
 	check := h[len(h)-1].(map[string]interface{})
@@ -52,7 +54,8 @@ func GetDownloadAudioUrl(q map[string]interface{}, high bool, audio bool) (strin
 	return s["url"].(string), nil
 }
 
-func GetDownloadUrl(q map[string]interface{}, high bool, audio bool) (string, error) {
+//GetDownloadURL get the url for downoading the video
+func GetDownloadURL(q map[string]interface{}, high bool, audio bool) (string, error) {
 	h := q["formats"].([]interface{})
 	var index int
 
@@ -77,6 +80,7 @@ func GetDownloadUrl(q map[string]interface{}, high bool, audio bool) (string, er
 	return s["url"].(string), nil
 }
 
+//DownloadVideo actually downloads the video,calculates % downloaded and writes to file
 func DownloadVideo(link string, out *os.File) error {
 	counter := &writeCounter{}
 

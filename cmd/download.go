@@ -156,14 +156,14 @@ func download(args []string, high bool, audio bool) error {
 
 		// s = h[index].(map[string]interface{})
 
-		link, err = ytdownload.GetDownloadUrl(q, high, audio)
+		link, err = ytdownload.GetDownloadURL(q, high, audio)
 		if err != nil {
 			return err
 		}
 
 	} else {
 
-		link, err = ytdownload.GetDownloadAudioUrl(q, high, audio)
+		link, err = ytdownload.GetDownloadAudioURL(q, high, audio)
 		if err != nil {
 			return err
 		}

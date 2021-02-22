@@ -23,6 +23,7 @@ func onSigInt(path string) {
 	}()
 }
 
+//GetID extracts the id from a given yotube url
 func GetID(link string) (string, error) {
 	u, err := url.Parse(link)
 	if err != nil {
@@ -41,6 +42,7 @@ func GetID(link string) (string, error) {
 	return id, nil
 }
 
+//CreateFile is used to create a file in the users downloads directory and call the onsigint func
 func CreateFile(filename string) (*os.File, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
