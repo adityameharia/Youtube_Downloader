@@ -60,7 +60,7 @@ func CreateFile(filename string) (*os.File, error) {
 
 	out, err := os.Create(filepath.Join(home, filepath.Base(filename)))
 	if err != nil {
-		fmt.Println("Unable to create File")
+		fmt.Println(err)
 		return nil, err
 	}
 

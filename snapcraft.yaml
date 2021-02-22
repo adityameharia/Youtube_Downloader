@@ -1,0 +1,18 @@
+name: yt-downloader
+version: git
+summary: A cli written in golang to download youtube videos
+description: |
+  A cli written in golang to download youtube videos
+  Cant download copyrighted content
+base: core20
+confinement: devmode
+parts:
+  yt-downloader:
+    plugin: go
+    source: .
+    source-type: git
+    build-packages:
+      - gcc
+apps:
+  yt-downloader:
+    command: bin/yt-downloader

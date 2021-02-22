@@ -104,7 +104,7 @@ func DownloadVideo(link string, out *os.File) error {
 	defer out.Close()
 
 	fmt.Printf("\r%s", strings.Repeat(" ", 36))
-	fmt.Printf("\rDownload Completed...U can view the file at in your /Downloads directory\n")
+	fmt.Printf("\rDownload Completed...U can view the file at in your ~/Downloads directory\n")
 
 	return nil
 }
