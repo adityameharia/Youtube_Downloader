@@ -47,22 +47,27 @@ func CreateFile(filename string) (*os.File, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-
+	fmt.Println(home)
 	home += "/Downloads/"
 
 	//to delete partially written files on ^C
 	onSigInt(home + filename)
 
+	fmt.Println("bye1")
 	if _, err := os.Stat(home + filename); err == nil {
-		fmt.Println("The given filename already exists")
+		fmt.Println(err)
 		return nil, errors.New("file doesnt exist")
 	}
+
+	fmt.Println("bye2")
 
 	out, err := os.Create(filepath.Join(home, filepath.Base(filename)))
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
+
+	fmt.Println("bye3")
 
 	return out, nil
 }
