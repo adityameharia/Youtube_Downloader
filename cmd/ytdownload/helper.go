@@ -43,11 +43,11 @@ func GetID(link string) (string, error) {
 }
 
 //CreateFile is used to create a file in the users downloads directory and call the onsigint func
-func CreateFile(filename string) (*os.File, error) {
+func CreateFile(filename string) (*os.File, string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return nil, "", err
 	}
 	dir := strings.Split(home, "/")
 	home = "/" + dir[1] + "/" + dir[2] + "/Downloads/"
@@ -57,17 +57,17 @@ func CreateFile(filename string) (*os.File, error) {
 
 	if _, err := os.Stat(home + filename); err == nil {
 		fmt.Println("A file with the given name already exists")
-		return nil, errors.New("file doesnt exist")
+		return nil, "", errors.New("file doesnt exist")
 	}
 
 	out, err := os.Create(filepath.Join(home, filepath.Base(filename)))
 	if err != nil {
 		//fmt.Println("Unable to create file")
 		fmt.Println(err)
-		return nil, err
+		return nil, "", err
 	}
 
-	return out, nil
+	return out, (home + filename), nil
 }
 
 func (wc *writeCounter) Write(p []byte) (int, error) {

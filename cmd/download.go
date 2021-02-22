@@ -121,13 +121,17 @@ func download(args []string, high bool, audio bool) error {
 	// 	return nil
 	// }
 
-	out, err := ytdownload.CreateFile(args[1])
+	out, path, err := ytdownload.CreateFile(args[1])
 	if err != nil {
 		return err
 	}
 
 	q, err := ytdownload.GetDownloadData(queryStr)
 	if err != nil {
+		err := os.Remove(path)
+		if err != nil {
+			fmt.Println("Unable to delete the file created")
+		}
 		return err
 	}
 	//var s map[string]interface{}
@@ -158,6 +162,10 @@ func download(args []string, high bool, audio bool) error {
 
 		link, err = ytdownload.GetDownloadURL(q, high, audio)
 		if err != nil {
+			err := os.Remove(path)
+			if err != nil {
+				fmt.Println("Unable to delete the file created")
+			}
 			return err
 		}
 
@@ -165,6 +173,10 @@ func download(args []string, high bool, audio bool) error {
 
 		link, err = ytdownload.GetDownloadAudioURL(q, high, audio)
 		if err != nil {
+			err := os.Remove(path)
+			if err != nil {
+				fmt.Println("Unable to delete the file created")
+			}
 			return err
 		}
 
@@ -188,6 +200,10 @@ func download(args []string, high bool, audio bool) error {
 
 	err = ytdownload.DownloadVideo(link, out)
 	if err != nil {
+		err := os.Remove(path)
+		if err != nil {
+			fmt.Println("Unable to delete the file created")
+		}
 		return err
 	}
 
