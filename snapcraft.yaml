@@ -4,7 +4,7 @@ summary: A cli written in golang to download youtube videos
 description: |
   A cli written in golang to download youtube videos
   Cant download copyrighted content
-confinement: classic
+confinement: strict
 base: core20
 parts:
   yt-downloader:
@@ -16,3 +16,8 @@ parts:
 apps:
   yt-downloader:
     command: bin/yt-downloader
+plugs:
+  yt-downloader-system:
+    interface: system-files
+  yt-downloader-network:
+    interface: network
