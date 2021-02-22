@@ -1,7 +1,6 @@
 package ytdownload
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -55,10 +54,10 @@ func CreateFile(filename string) (*os.File, error) {
 	//to delete partially written files on ^C
 	onSigInt(home + filename)
 
-	if _, err := os.Stat(home + filename); err == nil {
-		fmt.Println("A file with the given name already exists")
-		return nil, errors.New("file doesnt exist")
-	}
+	// if _, err := os.Stat(home + filename); err == nil {
+	// 	fmt.Println("A file with the given name already exists")
+	// 	return nil, errors.New("file doesnt exist")
+	// }
 
 	out, err := os.Create(filepath.Join(home, filepath.Base(filename)))
 	if err != nil {
