@@ -21,3 +21,5 @@ plugs:
     interface: system-files
   yt-downloader-network:
     interface: network
+  yt-downloader-files:
+    interface: personal-files
