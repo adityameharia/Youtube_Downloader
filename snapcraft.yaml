@@ -17,6 +17,10 @@ apps:
   yt-downloader:
     command: bin/yt-downloader
 plugs:
-    - system-files
-    - network
+  yt-downloader-network:
+    interface: network
+  yt-downloader-system-files:
+    interface: system-files
+    write:
+    - /home
   
