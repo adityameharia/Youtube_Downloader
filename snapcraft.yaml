@@ -19,8 +19,6 @@ apps:
 plugs:
   yt-downloader-network:
     interface: network
-  yt-downloader-personal-files:
-    interface: personal-files
-    write:
-    - /home
+  yt-downloader-home:
+    interface: home
   
