@@ -121,21 +121,15 @@ func download(args []string, high bool, audio bool) error {
 	// 	return nil
 	// }
 
-	fmt.Println("h1")
-
 	out, err := ytdownload.CreateFile(args[1])
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("h2")
-
 	q, err := ytdownload.GetDownloadData(queryStr)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("h3")
 	//var s map[string]interface{}
 
 	var link string
@@ -166,7 +160,6 @@ func download(args []string, high bool, audio bool) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("h4")
 
 	} else {
 
@@ -185,7 +178,6 @@ func download(args []string, high bool, audio bool) error {
 		// }
 
 		// s = h[len(h)-1].(map[string]interface{})
-		fmt.Println("h4")
 
 	}
 	// y := spinner.New(spinner.CharSets[0], 100*time.Millisecond)
@@ -198,8 +190,6 @@ func download(args []string, high bool, audio bool) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("h5")
 
 	return nil
 
