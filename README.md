@@ -16,7 +16,7 @@ USAGE
   $ yt-downloader COMMAND
 ...
 ```
-#Commands
+# Commands
 
 ## `yt-downloader download LINK FILENAME`
 
