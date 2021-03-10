@@ -1,29 +1,22 @@
-# Youtube_Downloader
+# Youtube Downloader
 
-A snap package written using golang and cobra which downloads youtbe videos,download videos as podcast.
+A snap package written using golang and cobra, capable of downloading audio and video data from youtube links.
 
-Uses goRoutines,channels,streams etc.
+## Installation
 
-* [Usage](#usage)
-* [Commands](#commands)
+The package is available on [Snap](https://snapcraft.io/yt-downloader). If you are on any linux distribution, just run the following command to install
 
-# Usage
-<!-- usage -->
-```sh-session
+```
 $ sudo snap install yt-downloader
-$ yt-downloader --help [COMMAND]
-USAGE
-  $ yt-downloader COMMAND
-...
 ```
-# Commands
 
-## `yt-downloader download LINK FILENAME`
+## Usage
 
-Download non copyrighted youtube videos
+You can easily download non-copyrighted videos 
+
 ```
 USAGE
-    $yt-downloader download LINK FILENAME
+    $ yt-downloader download LINK FILENAME
 
 ARGUMENTS
   LINK          Link of the youtube video to be downloaded
@@ -34,4 +27,9 @@ Options
     -a, --audio=audio to download only audio 
 ```
 
-_See code: [cmd/download.go](https://github.com/adityameharia/Youtube_Downloader/blob/main/cmd/download.go)_
+## License
+
+Open Sourced under the [Apache](LICENSE) License. All Rights Reserved.
+
+[![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com)
+
