@@ -1,6 +1,6 @@
 # Youtube_Downloader
 
-A snap package written using golang and cobra which download youtbe videos,download videos as podcast.
+A snap package written using golang and cobra which downloads youtbe videos,download videos as podcast.
 
 Uses goRoutines,channels,streams etc.
 
@@ -11,9 +11,9 @@ Uses goRoutines,channels,streams etc.
 <!-- usage -->
 ```sh-session
 $ sudo snap install yt-downloader
-$ huffman-compressor --help [COMMAND]
+$ yt-downloader --help [COMMAND]
 USAGE
-  $ huffman-compressor COMMAND
+  $ yt-downloader COMMAND
 ...
 ```
 #Commands

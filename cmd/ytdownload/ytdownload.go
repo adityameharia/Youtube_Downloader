@@ -45,7 +45,7 @@ func GetDownloadAudioURL(q map[string]interface{}, high bool, audio bool) (strin
 	check := h[len(h)-1].(map[string]interface{})
 
 	if _, ok := check["url"]; !ok {
-		fmt.Println("This audio cant be downloaded due to Copyright Infringment")
+		fmt.Println("This audio cant be downloaded due to Copyright Infringment.This is generally the case with music videos")
 		return "nil", errors.New("Error")
 	}
 
@@ -62,7 +62,7 @@ func GetDownloadURL(q map[string]interface{}, high bool, audio bool) (string, er
 	check := h[0].(map[string]interface{})
 
 	if _, ok := check["url"]; !ok {
-		fmt.Println("This video cant be downloaded due to Copyright Infringment")
+		fmt.Println("This video cant be downloaded due to Copyright Infringment.This is generally the case with music videos")
 		return "nil", errors.New("Error")
 	}
 
