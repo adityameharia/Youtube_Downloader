@@ -29,7 +29,7 @@ Options
 
 ## License
 
-Open Sourced under the [Apache](LICENSE) License. All Rights Reserved.
+Licensed under the [Apache 2.0](LICENSE) License. All Rights Reserved.
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com)
 
