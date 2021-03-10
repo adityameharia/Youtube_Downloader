@@ -20,6 +20,11 @@ USAGE
 
 ## `yt-downloader download LINK FILENAME`
 
+Download non copyrighted youtube videos
+```
+USAGE
+    $yt-downloader download LINK FILENAME
+
 ARGUMENTS
   LINK          Link of the youtube video to be downloaded
   FILENAME      Output file name
@@ -27,5 +32,6 @@ ARGUMENTS
 Options
     -d, --hd=hd to download videos in 720p
     -a, --audio=audio to download only audio 
+```
 
 _See code: [cmd/download.go](https://github.com/adityameharia/Youtube_Downloader/blob/main/cmd/download.go)_
