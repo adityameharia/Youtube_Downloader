@@ -71,7 +71,6 @@ func download(args []string, high bool, audio bool, filename string) error {
 
 	q, err := ytdownload.GetDownloadData(queryStr)
 	if err != nil {
-		fmt.Println("Unable to get download data")
 		return err
 	}
 

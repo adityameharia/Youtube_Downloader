@@ -19,8 +19,16 @@ type writeCounter struct {
 
 //GetDownloadData gets the json resp
 func GetDownloadData(queryStr string) (map[string]interface{}, error) {
-	resp, _ := http.Get(queryStr)
-	rb, _ := ioutil.ReadAll(resp.Body)
+	resp, err := http.Get(queryStr)
+	if err != nil {
+		fmt.Println("There was a problem connecting to the remote server.\nPls check your internet connection to make sure it isnt a problem at your end.")
+		return nil, err
+	}
+	rb, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("An error occured")
+		return nil, err
+	}
 	data := string(rb)
 
 	params, err := url.ParseQuery(data)
