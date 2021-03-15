@@ -133,3 +133,13 @@ func DownloadVideo(link string, out *os.File) error {
 
 	return nil
 }
+
+func CheckIsLive(q map[string]interface{}) bool {
+	q = q["videoDetails"].(map[string]interface{})
+	if _, ok := q["isLive"]; ok {
+		if q["isLive"].(bool) {
+			return true
+		}
+	}
+	return false
+}

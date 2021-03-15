@@ -74,6 +74,13 @@ func download(args []string, high bool, audio bool, filename string) error {
 		return err
 	}
 
+	isLive := ytdownload.CheckIsLive(q)
+
+	if isLive {
+		fmt.Println("Cannot download a live video")
+		os.Exit(1)
+	}
+
 	if filename == "" {
 		filename = ytdownload.GetFilename(q)
 	}
