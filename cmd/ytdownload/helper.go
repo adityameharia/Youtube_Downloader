@@ -17,8 +17,11 @@ func onSigInt(path string) {
 		<-c
 		err := os.Remove(path)
 		if err != nil {
-			fmt.Println("Unable to delete the file created")
+			fmt.Printf("\r%s", strings.Repeat(" ", 36))
+			fmt.Println("\rUnable to delete the file created")
 		}
+		fmt.Printf("\r%s", strings.Repeat(" ", 36))
+		fmt.Println("\rDownload cancelled")
 		os.Exit(1)
 	}()
 }

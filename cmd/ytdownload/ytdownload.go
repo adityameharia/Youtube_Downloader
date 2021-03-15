@@ -33,13 +33,23 @@ func GetDownloadData(queryStr string) (map[string]interface{}, error) {
 
 	json.Unmarshal([]byte(params["player_response"][0]), &result)
 
-	q := result["streamingData"].(map[string]interface{})
+	//q := result["streamingData"].(map[string]interface{})
 
-	return q, nil
+	return result, nil
+}
+
+//get the title of the video
+func GetFilename(q map[string]interface{}) string {
+	q = q["videoDetails"].(map[string]interface{})
+	name := q["title"].(string)
+	return name
 }
 
 //GetDownloadAudioURL get the url for downloading only audio
 func GetDownloadAudioURL(q map[string]interface{}, high bool, audio bool) (string, error) {
+
+	q = q["streamingData"].(map[string]interface{})
+
 	h := q["adaptiveFormats"].([]interface{})
 
 	check := h[len(h)-1].(map[string]interface{})
@@ -56,6 +66,9 @@ func GetDownloadAudioURL(q map[string]interface{}, high bool, audio bool) (strin
 
 //GetDownloadURL get the url for downoading the video
 func GetDownloadURL(q map[string]interface{}, high bool, audio bool) (string, error) {
+
+	q = q["streamingData"].(map[string]interface{})
+
 	h := q["formats"].([]interface{})
 	var index int
 
