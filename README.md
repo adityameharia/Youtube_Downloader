@@ -16,15 +16,15 @@ You can easily download non-copyrighted videos
 
 ```
 USAGE
-    $ yt-downloader download LINK FILENAME
+    $ yt-downloader download LINK
 
 ARGUMENTS
   LINK          Link of the youtube video to be downloaded
-  FILENAME      Output file name
 
 Options
-    -d, --hd=hd to download videos in 720p
-    -a, --audio=audio to download only audio 
+    -d, --hd to download videos in 720p
+    -a, --audio to download only audio 
+    -n, --name to specify the name of the file
 ```
 
 ## License
